@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>json with jquery</title>
+<style>
+
+table{background:#CCC;border:1px solid #000;}
+table td{padding:15px;border:1px solid #DDD;}
+
+</style>
+</head>
+
+<body>
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script>
+
+  var pageSize=3;
+  var currentPageNo=1;
+  var startId=0;
+  var endId=currentPageNo*pageSize;
+  var totalPageNumbers;
+  var objData;
+
+
+  //put the below code in document.ready
+  $(document).ready(function(){
+  $.getJSON('crime.json',function(jsonData)
+  {
+      objData = jsonData;
+
+      if(objData!=undefined)
+      {
+        totalPageNumbers = Math.ceil(objData.length / pageSize);
+        binddata(currentPageNo);
+      }
+  });
+});
+
+
+
+
+function binddata(pageNo)
+{
+  var currentPageNo=pageNo;
+  endId=(currentPageNo*pageSize);
+  startId=endId-pageSize;
+
+  totalPageNumbers = Math.ceil(objData.length / pageSize);
+
+
+
+  $('#dynamictable').html("");
+  $('#dynamictable').append('<table></table>');
+  var table = $('#dynamictable').children();
+table.append("<tr><th>Year</th><th>Under 500</th> <th>Over 500</th></tr>")
+
+if(endId>objData.length)
+  endId=objData.length;
+
+for (counter=startId;counter<endId;counter++){
+  table.append("<tr><td>"+objData[counter].year+"</td><td>"+objData[counter].over500+"</td><td>"+objData[counter].under500+"</td><td><button onclick=\"deletes("+counter+")\">Delete</button></td></tr>");
+}
+
+$('#buttons').html("");
+for(counter=0;counter<totalPageNumbers;counter++)
+{
+  $('#buttons').append('<button type="button" class="btn btn-secondary" onclick="binddata('+ (counter+1) +')">'+ (counter+1) + '</button>');
+}
+
+$('#button').html("");
+/*$(function()
+{
+  $('#hello').click(function(e)
+{
+  var row=$(this).closest('<tr>');
+  row.remove();
+
+})
+})*/
+
+}
+function adds()
+{
+  var add={};
+  var txt1=document.getElementById("year").value;
+  var txt2=document.getElementById("under").value;
+  var txt3=document.getElementById("over").value;
+  add["year"]=txt1;
+  add["under500"]=txt2;
+  add["over500"]=txt3;
+    objData.push(add);
+console.log(objData);
+
+binddata(currentPageNo);
+}
+
+function deletes(counter){
+  console.log(counter);
+  for(var k=counter;k<objData.length-1;k++){
+    objData[k].year=objData[k+1].year;
+    objData[k].over500=objData[k+1].over500;
+    objData[k].under500=objData[k+1].under500;
+  }
+objData.pop();
+binddata(currentPageNo);
+}
+
+  </script>
+  <h1><center>Chicago crime Report</center></h1>
+<center>
+<div id="dynamictable"></center>
+</div>
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups" style="margin-left:900px; margin-top:300px">
+  <div class="btn-group"  role="group" aria-label="First group" id="buttons">
+  </div>
+  <form style="margin-top:40px;">
+Year:<br>
+<input type="text" name="Year" id="year"><br>
+Above500:<br>
+<input type="text" name="Above500" id="under"><br>
+Under500:<br>
+<input type="text" name="Under500" id="over"><br>
+<br>
+<input type="button" value="Add" onclick="adds()"/>
+</form>
+
+
+
+  </body>
+  </html>
